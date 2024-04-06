@@ -81,7 +81,7 @@ void run_nb_pipeline(std::string header_file, std::string output_file) {
 	generate_send(oss);
 	generate_ingress_step(oss);
 	reliable_module::instance.gen_timer_callback(oss);
-	keepalive_module::instance.gen_timer_callback(oss);
+	// keepalive_module::instance.gen_timer_callback(oss);
 	oss.close();
 }
 
