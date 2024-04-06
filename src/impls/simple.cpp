@@ -55,10 +55,12 @@ int main(int argc, char* argv[]) {
 	signaling_module::instance.init_module();	
 	inorder_module::instance.init_module();
 	reliable_module::instance.init_module();
+	// keepalive_module::instance.init_module();
 	identifier_module::instance.init_module();	
 	signaling_module_after::instance.init_module();	
 	routing_module::instance.init_module();
 	checksum_module::instance.init_module();
+	// compression_module::instance.init_module();
 	network_module::instance.init_module();
 	
 	net_packet.fix_layout();

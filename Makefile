@@ -41,10 +41,10 @@ LIBRARY_NAME=net_blocks
 DEBUG ?= 0
 ifeq ($(DEBUG),1)
 CFLAGS=-g -std=c++11 -O0
-LINKER_FLAGS=-rdynamic  -g -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME)
+LINKER_FLAGS=-rdynamic  -g -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -lz
 else
 CFLAGS=-std=c++11 -O3
-LINKER_FLAGS=-rdynamic  -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME)
+LINKER_FLAGS=-rdynamic  -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -lz
 endif
 
 
@@ -110,6 +110,9 @@ $(BUILD_DIR)/runtime/nb_timer.o: $(RUNTIME_DIR)/nb_timer.c $(RUNTIME_INCLUDES)
 	$(CC) $(RCFLAGS) -o $@ $< -c -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)
 
 
+$(BUILD_DIR)/runtime/nb_compression.o: $(RUNTIME_DIR)/nb_compression.c $(RUNTIME_INCLUDES)
+	$(CC) $(RCFLAGS) -o $@ $< -c -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)
+
 
 RDMA_CORE_FLAGS=-I$(RDMA_CORE_PATH)/include -L$(RDMA_CORE_PATH)/lib -Wl,--rpath,$(RDMA_CORE_PATH)/lib
 $(BUILD_DIR)/runtime/nb_mlx5_transport.o: $(RUNTIME_DIR)/nb_mlx5_transport.cc $(RUNTIME_INCLUDES)
@@ -122,7 +125,7 @@ $(BUILD_DIR)/runtime/mlx5_impl/%.o: $(RUNTIME_DIR)/mlx5_impl/%.cc $(wildcard $(R
 mlx5_runtime: $(BUILD_DIR)/runtime/nb_mlx5_transport.o $(BUILD_DIR)/runtime/mlx5_impl/transport.o $(BUILD_DIR)/runtime/mlx5_impl/halloc.o
 	
 
-SIMPLE_RUNTIME_OBJS=$(BUILD_DIR)/runtime/nb_runtime_simple.o $(BUILD_DIR)/runtime/nb_simple.o $(BUILD_DIR)/runtime/nb_timer.o
+SIMPLE_RUNTIME_OBJS=$(BUILD_DIR)/runtime/nb_runtime_simple.o $(BUILD_DIR)/runtime/nb_simple.o $(BUILD_DIR)/runtime/nb_timer.o $(BUILD_DIR)/runtime/nb_compression.o
 
 	
 .PHONY: simple_network_test
@@ -138,8 +141,8 @@ simple_test: executables $(SIMPLE_RUNTIME_OBJS)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple/server.c -o $(BUILD_DIR)/test/simple_test/server.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple/client.c -o $(BUILD_DIR)/test/simple_test/client.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
 	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_server
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_client
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_server -lz
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_client -lz
 
 .PHONY: simple_test_accept
 simple_test_accept: executables $(SIMPLE_RUNTIME_OBJS)
@@ -176,8 +179,8 @@ simple_test_posix: posix_interface $(SIMPLE_RUNTIME_OBJS)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_posix/server.c -o $(BUILD_DIR)/test/simple_test_posix/server.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)/posix/include
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_posix/client.c -o $(BUILD_DIR)/test/simple_test_posix/client.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)/posix/include
 	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_server $(BUILD_DIR)/runtime/posix/network.o
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_client $(BUILD_DIR)/runtime/posix/network.o
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_server $(BUILD_DIR)/runtime/posix/network.o -lz
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_client $(BUILD_DIR)/runtime/posix/network.o -lz
 	
 .PHONY: simple_test_linux
 simple_test_linux: executables $(SIMPLE_RUNTIME_OBJS)

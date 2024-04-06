@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "gen_headers.h"
+#include "nb_compression.h"
 #include "nb_timer.h"
 #include <stdio.h>
 #include <arpa/inet.h>
@@ -80,6 +81,7 @@ void nb__destablish (nb__connection_t* arg0);
 nb__connection_t* nb__establish (unsigned int arg0, unsigned int arg1, unsigned int arg2, void (*arg3)(int, nb__connection_t*));
 void nb__net_init (void);
 void nb__reliable_redelivery_timer_cb(nb__timer*, void* param, unsigned long long to);
+void nb__keepalive_timer_cb(nb__timer*, void* param, unsigned long long to);
 
 // Runtime API
 int nb__read(nb__connection_t*, char*, int);

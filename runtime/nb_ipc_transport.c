@@ -86,14 +86,14 @@ char* nb__poll_packet(int* size, int headroom) {
 		char* buf = malloc(IPC_MTU + headroom);
 		memcpy(buf + headroom, temp_buf, IPC_MTU);
 		*size = len;
-		//nb__debug_packet(temp_buf);
+		// nb__debug_packet(buf, len + headroom);
 		
 		return buf;
 	}
 	return NULL;
 }
 int nb__send_packet(char* buff, int len) {
-	nb__debug_packet(buff, len);
+	// nb__debug_packet(buff, len);
 	if (nb__ipc_simulate_packet_drop) {
 		int r = rand() % PACKET_DROP_CHANCE;
 		if (r == 0) {

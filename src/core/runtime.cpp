@@ -13,6 +13,7 @@ builder::dyn_var<void (void*, void*, int)> memcpy = builder::as_global("memcpy")
 builder::dyn_var<int (void*, void*, int)> memcmp = builder::as_global("memcmp");
 
 builder::dyn_var<void(void)> sprintf = builder::as_global("sprintf");
+builder::dyn_var<void(char*)> printf = builder::as_global("printf");
 
 builder::dyn_var<int (void)> size_of = builder::as_global("sizeof");
 
