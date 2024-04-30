@@ -17,6 +17,7 @@ int main(int argc, char* argv[]) {
 	reliable_module::instance.configEnableReliability();	
 	checksum_module::instance.configEnableChecksum();
 	checksum_module::instance.configChecksumType(checksum_module::checksum_type_t::full_packet);
+	compression_module::instance.configureCompression(compression_module::compression_strategy_t::ENTIRE_PACKET);
 
 	payload_module::instance.init_module();
 	signaling_module::instance.init_module();	
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]) {
 	signaling_module_after::instance.init_module();	
 	routing_module::instance.init_module();
 	checksum_module::instance.init_module();
-	// compression_module::instance.init_module();
+	compression_module::instance.init_module();
 	network_module::instance.init_module();
 	
 	net_packet.fix_layout();

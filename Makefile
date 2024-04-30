@@ -41,10 +41,10 @@ LIBRARY_NAME=net_blocks
 DEBUG ?= 0
 ifeq ($(DEBUG),1)
 CFLAGS=-g -std=c++11 -O0
-LINKER_FLAGS=-rdynamic  -g -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -lz
+LINKER_FLAGS=-rdynamic  -g -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -llz4
 else
 CFLAGS=-std=c++11 -O3
-LINKER_FLAGS=-rdynamic  -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -lz
+LINKER_FLAGS=-rdynamic  -L$(BUILDIT_LIBRARY_PATH) -L$(BUILD_DIR) -l$(LIBRARY_NAME) -l$(BUILDIT_LIBRARY_NAME) -llz4
 endif
 
 
@@ -114,7 +114,7 @@ $(BUILD_DIR)/runtime/nb_compression.o: $(RUNTIME_DIR)/nb_compression.c $(RUNTIME
 	$(CC) $(RCFLAGS) -o $@ $< -c -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)
 
 
-RDMA_CORE_FLAGS=-I$(RDMA_CORE_PATH)/include -L$(RDMA_CORE_PATH)/lib -Wl,--rpath,$(RDMA_CORE_PATH)/lib
+RDMA_CORE_FLAGS=-I$(RDMA_CORE_PATH)/include -L$(RDMA_CORE_PATH)/lib -Wl,--rpath,$(RDMA_CORE_PATH)/lib -llz4
 $(BUILD_DIR)/runtime/nb_mlx5_transport.o: $(RUNTIME_DIR)/nb_mlx5_transport.cc $(RUNTIME_INCLUDES)
 	$(CXX) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_mlx5_transport.cc -o $(BUILD_DIR)/runtime/nb_mlx5_transport.o -I $(RUNTIME_DIR)/mlx5_impl/ -I $(SCRATCH_DIR) -I $(RUNTIME_DIR) $(RDMA_CORE_FLAGS)
 
@@ -148,8 +148,8 @@ simple_test: executables $(SIMPLE_RUNTIME_OBJS)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple/server.c -o $(BUILD_DIR)/test/simple_test/server.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple/client.c -o $(BUILD_DIR)/test/simple_test/client.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
 	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_server -lz
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_client -lz
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_server -llz4
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_client -llz4
 
 .PHONY: simple_test_accept
 simple_test_accept: executables $(SIMPLE_RUNTIME_OBJS)
@@ -186,8 +186,8 @@ simple_test_posix: posix_interface $(SIMPLE_RUNTIME_OBJS)
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_posix/server.c -o $(BUILD_DIR)/test/simple_test_posix/server.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)/posix/include
 	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_posix/client.c -o $(BUILD_DIR)/test/simple_test_posix/client.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR) -I $(RUNTIME_DIR)/posix/include
 	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_server $(BUILD_DIR)/runtime/posix/network.o -lz
-	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_client $(BUILD_DIR)/runtime/posix/network.o -lz
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_server $(BUILD_DIR)/runtime/posix/network.o -llz4
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_posix/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_posix_client $(BUILD_DIR)/runtime/posix/network.o -llz4
 	
 .PHONY: simple_test_linux
 simple_test_linux: executables $(SIMPLE_RUNTIME_OBJS)

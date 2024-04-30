@@ -1,11 +1,10 @@
 #include "modules/compression_module.h"
-#include "zlib.h"
 
 namespace net_blocks {
 
 namespace runtime {
-    builder::dyn_var<int(char*, int, char*, int, int*)> zlib_compress = builder::as_global("zlib_compress");
-    builder::dyn_var<int(char*, int, char*, int, int*)> zlib_decompress = builder::as_global("zlib_decompress");
+    builder::dyn_var<int(char*, int, char*, int, int*)> compress = builder::as_global("compress");
+    builder::dyn_var<int(char*, int, char*, int, int*)> decompress = builder::as_global("decompress");
 }
 
 dynamic_layout compressed_net_packet;
@@ -36,7 +35,7 @@ module::hook_status compression_module::hook_send(builder::dyn_var<connection_t*
 
         builder::dyn_var<int> compressed_length = payload_len;
         // runtime::memcpy(net_packet["payload"]->get_addr(p), packet_copy, payload_len);
-        builder::dyn_var<int> compress_status = runtime::zlib_compress(
+        builder::dyn_var<int> compress_status = runtime::compress(
             packet_copy, 
             payload_len, 
             net_packet["payload"]->get_addr(p), 
@@ -48,7 +47,7 @@ module::hook_status compression_module::hook_send(builder::dyn_var<connection_t*
         auto total_len = header_size + compressed_length;
     	net_packet["total_len"]->set_integer(p, total_len);
         net_packet["computed_total_len"]->set_integer(p, total_len);
-        return compress_status == Z_OK
+        return compress_status == 0
             ? hook_status::HOOK_CONTINUE
             : hook_status::HOOK_DROP;
 
@@ -66,12 +65,14 @@ module::hook_status compression_module::hook_send(builder::dyn_var<connection_t*
 
         auto compressed_header_size = compressed_net_packet.get_total_size() - 1;
         builder::dyn_var<int> compressed_length;
-        builder::dyn_var<int> compress_status = runtime::zlib_compress(
+        // runtime::printf("Fuck3\\n");
+        builder::dyn_var<int> compress_status = runtime::compress(
             packet_copy,
             len,
             compressed_net_packet["payload"]->get_addr(p + get_headroom()),
             MTU_SIZE - compressed_header_size - get_headroom(),
             &compressed_length);
+        // runtime::printf("Fuck4 %d\\n", compress_status);
         // builder::dyn_var<int> compressed_length = len;
         // builder::dyn_var<int> compress_status = Z_OK;
         // runtime::memcpy(
@@ -87,7 +88,7 @@ module::hook_status compression_module::hook_send(builder::dyn_var<connection_t*
         // runtime::printf("\\n");
         net_packet["computed_total_len"]->set_integer(p, compressed_length + compressed_header_size);
         // runtime::printf("%d\\n", compress_status);
-        return compress_status == Z_OK
+        return compress_status == 0
             ? hook_status::HOOK_CONTINUE
             : hook_status::HOOK_DROP;
     }
@@ -103,7 +104,7 @@ module::hook_status compression_module::hook_ingress(packet_t p) {
 
         builder::dyn_var<int> uncompressed_length = len;
         // runtime::memcpy(net_packet["payload"]->get_addr(p), compressed_copy, len);
-        builder::dyn_var<int> decompress_status = runtime::zlib_decompress(
+        builder::dyn_var<int> decompress_status = runtime::decompress(
             compressed_copy, 
             len, 
             net_packet["payload"]->get_addr(p), 
@@ -114,7 +115,7 @@ module::hook_status compression_module::hook_ingress(packet_t p) {
         auto total_len = (net_packet.get_total_size() - get_headroom() - 1) + uncompressed_length;
         net_packet["total_len"]->set_integer(p, total_len);
         net_packet["computed_total_len"]->set_integer(p, total_len);
-        return decompress_status == Z_OK
+        return decompress_status == 0
             ? hook_status::HOOK_CONTINUE
             : hook_status::HOOK_DROP;
 
@@ -131,13 +132,15 @@ module::hook_status compression_module::hook_ingress(packet_t p) {
             // runtime::printf("%d ", (builder::dyn_var<unsigned int>)compressed_copy[i]);
         }
         // runtime::printf("\\n");
+        // runtime::printf("Fuck1\\n");
         builder::dyn_var<int> uncompressed_length;
-        builder::dyn_var<int> decompress_status = runtime::zlib_decompress(
+        builder::dyn_var<int> decompress_status = runtime::decompress(
             compressed_copy,
             len,
             p + get_headroom(),
             MTU_SIZE - get_headroom(),
             &uncompressed_length);
+        // runtime::printf("Fuck2: %d\\n", decompress_status);
         // builder::dyn_var<int> uncompressed_length = len;
         // builder::dyn_var<int> decompress_status = Z_OK;
         // runtime::memcpy(
@@ -156,7 +159,7 @@ module::hook_status compression_module::hook_ingress(packet_t p) {
         //     // runtime::printf("%d ", (builder::dyn_var<unsigned int>)uc[i]);
         // }
         // runtime::printf("\\n");
-        return decompress_status == Z_OK
+        return decompress_status == 0
             ? hook_status::HOOK_CONTINUE
             : hook_status::HOOK_DROP;
     }

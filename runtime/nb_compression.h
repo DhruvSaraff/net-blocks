@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-int zlib_compress(char* in, int in_len, char* out, int out_len, int* compressed_len);
+int compress(char* in, int in_len, char* out, int out_len, int* compressed_len);
 
-int zlib_decompress(char* in, int len, char* out, int out_len, int* decompressed_len);
+int decompress(char* in, int len, char* out, int out_len, int* decompressed_len);
 
 #ifdef __cplusplus 
 }
