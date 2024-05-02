@@ -35,6 +35,7 @@ builder::dyn_var<char*> reuse_mtu_buffer = builder::as_global("nb__reuse_mtu_buf
 builder::dyn_var<char* (void)> request_send_buffer = builder::as_global("nb__request_send_buffer");
 builder::dyn_var<void (char*)> return_send_buffer = builder::as_global("nb__return_send_buffer");
 
+builder::dyn_var<int (void)> get_mtu_size = builder::as_global("nb__get_mtu_size");
 
 builder::dyn_var<void*> net_state_obj = builder::as_global("nb__net_state");
 

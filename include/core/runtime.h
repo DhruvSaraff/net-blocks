@@ -39,6 +39,7 @@ extern builder::dyn_var<char*> reuse_mtu_buffer;
 extern builder::dyn_var<char* (void)> request_send_buffer;
 extern builder::dyn_var<void (char*)> return_send_buffer;
 
+extern builder::dyn_var<int (void)> get_mtu_size;
 
 extern builder::dyn_var<void*> net_state_obj;
 

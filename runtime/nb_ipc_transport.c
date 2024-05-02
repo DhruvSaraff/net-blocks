@@ -127,3 +127,7 @@ char* nb__request_send_buffer(void) {
 void* nb__return_send_buffer(char* p) {
 	free(p);
 }
+
+int nb__get_mtu_size(void) {
+	return IPC_MTU;
+}

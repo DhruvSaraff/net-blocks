@@ -12,6 +12,7 @@
 #include "modules/routing_module.h"
 #include "modules/compression_module.h"
 #include "modules/keepalive_module.h"
+#include "modules/fragmentation_module.h"
 #include "builder/builder_context.h"
 #include "blocks/c_code_generator.h"
 #include "blocks/rce.h"

@@ -13,7 +13,7 @@
 
 
 static struct transport_t transport;
-#define MLX5_MTU (1024)
+#define MLX5_MTU (8192)
 
 
 char nb__reuse_mtu_buffer[MLX5_MTU];
@@ -52,8 +52,8 @@ char* nb__poll_packet(int* size, int headroom) {
 		char* packet_addr = mlx5_get_next_recv_buffer(&transport);
 		*size = MLX5_MTU;
 		packet_addr = packet_addr - headroom;
-		//printf("Receiving:\n");
-        	//nb__debug_packet(packet_addr, 60);
+		// printf("Receiving:\n");
+        // 	nb__debug_packet(packet_addr, 60);
 
 		pending_recv--;
 		return packet_addr;
@@ -66,4 +66,8 @@ void nb__transport_default_init(void) {
 	nb__mlx5_init("eth2");
 }
 void nb__transport_default_deinit(void) {
+}
+
+int nb__get_mtu_size(void) {
+	return MLX5_MTU;
 }

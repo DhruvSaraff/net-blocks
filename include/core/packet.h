@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <map>
 
-#define MTU_SIZE (1024)
+#define MTU_SIZE (runtime::get_mtu_size())
 
 namespace net_blocks {
 using packet_t = builder::dyn_var<unsigned char*>;

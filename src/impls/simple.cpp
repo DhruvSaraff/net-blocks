@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
 	checksum_module::instance.configChecksumType(checksum_module::checksum_type_t::full_packet);
 	compression_module::instance.configureCompression(compression_module::compression_strategy_t::ENTIRE_PACKET);
 
+	fragmentation_module::instance.init_module();
 	payload_module::instance.init_module();
 	signaling_module::instance.init_module();	
 	inorder_module::instance.init_module();

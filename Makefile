@@ -25,6 +25,7 @@ $(shell mkdir -p $(BUILD_DIR)/runtime)
 $(shell mkdir -p $(BUILD_DIR)/test)
 $(shell mkdir -p $(BUILD_DIR)/test/simple_network_test)
 $(shell mkdir -p $(BUILD_DIR)/test/simple_test)
+$(shell mkdir -p $(BUILD_DIR)/test/simple_test_fragmentation)
 $(shell mkdir -p $(BUILD_DIR)/test/simple_test_accept)
 $(shell mkdir -p $(BUILD_DIR)/test/simple_test_inorder)
 $(shell mkdir -p $(BUILD_DIR)/test/simple_test_reliable)
@@ -150,6 +151,14 @@ simple_test: executables $(SIMPLE_RUNTIME_OBJS)
 	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
 	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_server -llz4
 	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_client -llz4
+
+.PHONY: simple_test_fragmentation
+simple_test_fragmentation: executables $(SIMPLE_RUNTIME_OBJS)
+	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_fragmentation/server.c -o $(BUILD_DIR)/test/simple_test_fragmentation/server.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
+	$(CC) $(RCFLAGS) -c $(TEST_DIR)/test_simple_fragmentation/client.c -o $(BUILD_DIR)/test/simple_test_fragmentation/client.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
+	$(CC) $(RCFLAGS) -c $(RUNTIME_DIR)/nb_ipc_transport.c -o $(BUILD_DIR)/runtime/nb_ipc_transport.o -I $(RUNTIME_DIR) -I $(SCRATCH_DIR)
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_fragmentation/server.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_fragmentation_server -llz4
+	$(CC) $(SIMPLE_RUNTIME_OBJS) $(BUILD_DIR)/test/simple_test_fragmentation/client.o $(BUILD_DIR)/runtime/nb_ipc_transport.o -o $(BUILD_DIR)/test/simple_fragmentation_client -llz4
 
 .PHONY: simple_test_accept
 simple_test_accept: executables $(SIMPLE_RUNTIME_OBJS)

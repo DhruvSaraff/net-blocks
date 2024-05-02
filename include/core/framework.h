@@ -50,7 +50,8 @@ public:
 	void run_establish_path(builder::dyn_var<connection_t*>, builder::dyn_var<unsigned int>, builder::dyn_var<unsigned int>, 
 		builder::dyn_var<unsigned int>);
 	void run_destablish_path(builder::dyn_var<connection_t*>);
-	builder::dyn_var<int> run_send_path(builder::dyn_var<connection_t*>, builder::dyn_var<char*>, builder::dyn_var<int>);
+	builder::dyn_var<int> run_send_path(builder::dyn_var<connection_t*>, builder::dyn_var<char*>, 
+		builder::dyn_var<int>, int start = 0);
 	void run_ingress_path(packet_t);
 	void run_net_init_path(void);
 
